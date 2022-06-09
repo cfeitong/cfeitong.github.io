@@ -1,0 +1,24 @@
+---
+layout: post
+title:  "ip-route2 cookbook"
+categories: linux network
+---
+
+# 一点历史
+kernel 2.2版本重写了网络子系统后，ip-route2登上了历史舞台。从此`arp`，`ifconfig`，`route`等命令不过是ip-route2的简易包装版。新的`ip`命令简介易用，且功能强大，可以直接操控tunnel。同时`ip`命令可以与iptables进行交互，实现更加复杂的路由逻辑。
+
+# 查询命令
+* `ip link show`
+这个命令列出了逻辑上连接在本机的网络接口。之所以说是逻辑上，是因为除了物理连接外，虚拟连接，如`lo`，也会展示出来。一个比较好的理解方式是，这里展示所有的接口，都有物理网线或者是模拟出来的网线对应。正因这里展示的是底层link，所以MAC地址也会一并列出。
+* `ip addr show`
+这是最常用的命令，能直观看到每个接口对应的ip地址范围。举例而言
+```
+eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 00:15:5d:1b:b1:da brd ff:ff:ff:ff:ff:ff
+    inet 172.26.145.31/20 brd 172.26.159.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::215:5dff:fe1b:b1da/64 scope link
+       valid_lft forever preferred_lft forever
+```
+通过inet那行不难看出`172.26.145.31/20`中的地址都是走的`eth0`。那么什么样的地址在`172.26.145.31/20`之中呢？众所周知
+* `ip route show`
